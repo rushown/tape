@@ -1,0 +1,57 @@
+# Tape as a public service (TAPE_MODE=hosted): anyone starts a paper account in
+# one tap or connects their own Bybit testnet / demo key. Caddy terminates
+# HTTPS with an automatic Let's Encrypt certificate for $TAPE_DOMAIN.
+#
+#   cp ../server/.env.example ../server/.env   # then set the hosted values (see deploy/README.md)
+#   TAPE_DOMAIN=tape.example.com docker compose -f docker-compose.hosted.yml up -d --build
+#
+# Point the domain's A/AAAA record at this machine first; ports 80 and 443 must be open.
+services:
+  tape:
+    build: ../server
+    restart: unless-stopped
+    env_file: ../server/.env
+    environment:
+      TAPE_MODE: hosted
+      NODE_ENV: production
+      DATA_DIR: /data
+      HOST: 0.0.0.0
+      PORT: "8791"
+      STT_BASE_URL: ${STT_BASE_URL:-http://whisper:8000/v1}
+    volumes:
+      - tape-data:/data
+    expose:
+      - "8791"
+    # One process per database file: SQLite is not shared between replicas.
+    deploy:
+      replicas: 1
+    depends_on:
+      - whisper
+
+  whisper:
+    image: ghcr.io/speaches-ai/speaches:latest-cpu
+    restart: unless-stopped
+    volumes:
+      - whisper-models:/home/ubuntu/.cache/huggingface
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      TAPE_DOMAIN: ${TAPE_DOMAIN:?set TAPE_DOMAIN, e.g. tape.example.com}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - tape
+
+volumes:
+  tape-data:
+  whisper-models:
+  caddy-data:
+  caddy-config:

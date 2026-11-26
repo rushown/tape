@@ -1,0 +1,26 @@
+# Tape server + local speech-to-text (speaches / faster-whisper), all self-hosted.
+# CPU-only is fine. Without the whisper service, voice is off and the phone command box still works.
+services:
+  tape:
+    build: ./server
+    restart: unless-stopped
+    env_file: ./server/.env
+    environment:
+      DATA_DIR: /data
+      STT_BASE_URL: ${STT_BASE_URL:-http://whisper:8000/v1}
+    ports:
+      - "8791:8791"
+    volumes:
+      - tape-data:/data
+    depends_on:
+      - whisper
+
+  whisper:
+    image: ghcr.io/speaches-ai/speaches:latest-cpu
+    restart: unless-stopped
+    volumes:
+      - whisper-models:/home/ubuntu/.cache/huggingface
+
+volumes:
+  tape-data:
+  whisper-models:

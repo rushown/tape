@@ -1,0 +1,16 @@
+node_modules/
+dist/
+dist-pages/
+data/
+.env
+.env.local
+.env.*.local
+.env.production
+*.ehpk
+app/app.json
+*.log
+.DS_Store
+*.db
+*.db-wal
+*.db-shm
+backups/

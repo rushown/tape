@@ -1,0 +1,26 @@
+{
+  "name": "tape-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Tape for Even G2: PnL, positions, price alerts and voice orders with one-tap confirm",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "simulate": "evenhub-simulator http://localhost:5174",
+    "manifest": "node scripts/gen-manifest.mjs",
+    "pack": "node scripts/gen-manifest.mjs && npm run build && evenhub pack app.json dist -o tape.ehpk --sdk-ver 0.0.16",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@evenrealities/even_hub_sdk": "^0.0.16"
+  },
+  "devDependencies": {
+    "@evenrealities/evenhub-cli": "^0.2.0",
+    "@evenrealities/evenhub-simulator": "^0.9.5",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}
