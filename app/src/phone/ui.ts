@@ -338,7 +338,7 @@ export function mountPhoneUi(root: HTMLElement, d: PhoneDeps) {
     $(root, '#account-card').hidden = !(hosted() && s.status && !s.needsSignIn)
     if (hosted() && s.status && !s.needsSignIn) $(root, '#acct-exchange').textContent = s.status.exchange.label
     $(root, '#srv-detail').textContent = s.status
-      ? `${s.status.exchange.label} · prices: ${s.status.prices ?? '—'} · voice: ${s.status.stt ?? 'off'}`
+      ? `${s.status.exchange.label}${s.status.exchange.label.includes("prices:") ? "" : ` · prices: ${s.status.prices ?? "—"}`} · voice: ${s.status.stt ?? 'off'}`
       : s.error || (hosted() ? 'Connected to a hosted Tape server.' : 'Run the Tape server, then paste its URL and APP_TOKEN.')
     const heard = $(root, '#heard')
     heard.hidden = !s.lastTranscript
